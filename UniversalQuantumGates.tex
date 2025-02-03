@@ -7,9 +7,6 @@
 \usepackage{quantikz}
 \usepackage{braket}
 
-\usepackage{setspace}
-\onehalfspacing
-
 \usepackage{fancyhdr}
 \fancyhf{}
 \rfoot{\thepage}
@@ -88,7 +85,7 @@ The proofs of universality presented in this paper will rely on decomposing each
 \subsection{Classical Circuits}
 Classical circuits are generally presented as electrical circuit diagrams. For example, a demonstration of how an XOR gate can be made from NAND gates is given in Figure 1.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     `\begin{circuitikz}
         \draw
@@ -133,7 +130,7 @@ Classical circuits are generally presented as electrical circuit diagrams. For e
         
         ;
     \end{circuitikz}
-    \caption{XOR Circuit from NAND Gates (Created by Student Researcher)}
+    \caption{XOR Circuit from NAND Gates}
     \label{fig:classical xor from nand circuit}
 \end{figure}
 
@@ -154,7 +151,7 @@ The final disparity can be solved by just disallowing any ancilla wires in quant
 
 $\emph{Fig. \ref{fig:quantum xor from nand circuit}}$ shows the new implementation of an XOR gate after making the above changes. It only uses modified $2 \to 2$ NAND gates, and it also shows the current state at various positions along the circuit, logically simplified as much as possible.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \scalebox{0.8}{
         \begin{quantikz}
@@ -171,7 +168,7 @@ $\emph{Fig. \ref{fig:quantum xor from nand circuit}}$ shows the new implementati
             p \: & \swap{-1} & \gate[2]{\text{NAND}} & \: 0 \: & \swap{-1} & \gate[2]{\text{NAND}} & \: 0 \: & \swap{-3} & \gate[2]{\text{NAND}} &  \: 0 \: & \swap{-5} & \gate[2]{\text{NAND}} & \: 0 \: \\
             q \: & \qw & \qw & \: \neg q \: & \qw & \qw & \: p \nor q \: & \qw & \qw &  \: p \nxor q \: & \qw & \qw & \: p \xor q \: \\
         \end{quantikz}}
-    \caption{Quantum-Compatible XOR from NAND (Created by Student Researcher)}
+    \caption{Quantum-Compatible XOR from NAND}
     \label{fig:quantum xor from nand circuit}
 \end{figure}
 
@@ -292,14 +289,14 @@ $$
 \end{bmatrix}
 $$
 which can be implemented with the following circuit (where exponentiation represents repeated application):
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \scalebox{1.3}{
         \begin{quantikz}
             \ket{\psi_1} \: & \qw & \qw & \ctrl{1} & \qw & \qw \\
             \ket{\psi_2} \: & \qw & \gate{R_Y(\pi/2)^{3}} & \gate{R_Z(\pi)} & \gate{R_Y(\pi/2)^{1}} & \qw
         \end{quantikz}}
-    \caption{Proof of CNOT Circuit (Created by Student Researcher)}
+    \caption{Proof of CNOT Circuit}
     \label{fig:quantum universal set 1 proof of CNOT circuit algebraic}
 \end{figure}
 
@@ -319,26 +316,26 @@ which approximates CNOT to $\epsilon = 7.15287 \times 10^{-6}$, within the desir
 
 \subsection{Proof of T}
 Implementing the T gate itself is fairly simple, because T is equivalent to $R_Z(\pi/2)$. However, $R_Z$ and $CR_Z$ are considered different gates, so in order to implement a $R_Z(\pi/2)$, a state in the $\ket{1}$ state must be prepared. Without the use of an ancilla qubit already in the $\ket{0}$ state, it can be done with the following circuit:
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \scalebox{1.1}{
         \begin{quantikz}
             \ket{\psi_{in}} \: & \qw & \ctrl{1} & \qw & \gate{R_Z(\pi/4)} & \qw & \: \ket{\psi_{out}}\\
             \ket{\psi_{in}} \: & \gate{R_Y(\pi/2)^3} & \gate{R_Z(\pi)} & \gate{R_Y(\pi/2)^3} & \ctrl{-1} & \gate{R_Y(\pi/2)^2} & \: \ket{0}
         \end{quantikz}}
-    \caption{Proof of T Circuit, No $\ket{0}$ Ancilla (Created by Student Researcher)}
-    \label{fig:quantum universal set 1 proof of T circuit}
+    \caption{Proof of T Circuit, No $\ket{0}$ Ancilla}
+    \label{fig:quantum universal set 1 proof of T circuit without ancilla}
 \end{figure}
 
 If instead an ancilla is allowed, then it can be implemented simply with the following circuit, which prepares the ancilla from a $\ket{0}$ to a $\ket{1}$ state, applies the rotation, then reverts the ancilla:
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \scalebox{1.1}{
         \begin{quantikz}
             \ket{\psi_{in}} \: & \qw & \gate{R_Z(\pi/4)} & \qw & \: \ket{\psi_{out}}\\
             \ket{0} \: & \gate{R_Y(\pi/2)^2} & \ctrl{-1} & \gate{R_Y(\pi/2)^2} & \: \ket{0}
         \end{quantikz}}
-    \caption{Proof of T Circuit, Ancilla Allowed (Created by Student Researcher)}
+    \caption{Proof of T Circuit, Ancilla Allowed}
     \label{fig:quantum universal set 1 proof of T circuit}
 \end{figure}
 
@@ -369,15 +366,15 @@ approximates the S gate to $\epsilon = 5.84993 \times 10^{-6}$.
 
 \subsection{Proof of H}
 The H gate is the most difficult to implement, as it contains an off-axis rotation (around the line X = Z). This leads to a much larger circuit approximation. Without the use of any $\ket{0}$ state ancilla qubits, the H gate can be implemented with the circuit:
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \scalebox{0.9}{
         \begin{quantikz}
             \ket{\psi_{in}} \: & \qw & \ctrl{1} & \gate{R_Y(\pi/2)^2} & \gate{R_Z(\pi)} & \gate{R_Y(\pi/2)^3} & \: \ket{\psi_{out}}\\
             \ket{\psi_{in}} \: & \gate{R_Y(\pi/2)^3} & \gate{R_Z(\pi)} & \gate{R_Y(\pi/2)^3} & \ctrl{-1} & \gate{R_Y(\pi/2)^2} & \: \ket{0}
         \end{quantikz}}
-    \caption{Proof of H Circuit, No $\ket{0}$ Ancilla (Created by Student Researcher)}
-    \label{fig:quantum universal set 1 proof of T circuit}
+    \caption{Proof of H Circuit, No $\ket{0}$ Ancilla}
+    \label{fig:quantum universal set 1 proof of H circuit}
 \end{figure}
 
 Although this can be simplified in the ancilla-allowed construction, it is easy to prove (by means of adding a CNOT gate to the ancilla, controlled on the input) that this method also works allowing for ancilla qubits.
