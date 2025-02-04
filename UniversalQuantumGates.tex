@@ -6,11 +6,7 @@
 \usepackage{circuitikz}
 \usepackage{quantikz}
 \usepackage{braket}
-
-\usepackage{fancyhdr}
-\fancyhf{}
-\rfoot{\thepage}
-\pagestyle{fancy}
+\usepackage{hyperref}
 
 \usepackage{biblatex}
 \addbibresource{references.bib}
@@ -18,13 +14,12 @@
 \title{Novel Minimal Universal Quantum Gates}
 
 \author{Christopher Gilbert}
-\date{November 2024}
+\date{February 2025}
 
 \newcommand{\nand}{\overline{\land}}
 \newcommand{\nor}{\overline{\lor}}
 \newcommand{\xor}{\oplus}
 \newcommand{\nxor}{\overline{\xor}}
-
 
 \begin{document}
 
@@ -41,37 +36,39 @@ This paper investigates the construction of universal classical and quantum gate
 \subsection{Universal Gates}
 A logic gate is an operation which acts on bits or qubits. For example, the classical AND gate receives two bits and outputs a 1 if and only if both input bits were 1. Let a gate $G$ that takes in $n$ inputs and returns $m$ outputs be denoted
 $$G : n \to m$$
-In conventional function notation, this would be written
+In conventional function notation, this is equivalent to
 $$G : \{0, 1\}^n \to \{0, 1\}^m$$
-A gate or set of gates is universal if some arrangement of the gates can replicate the behavior of every possible gate.
+A gate or set of gates is considered universal if some circuit constructed only from those gates can replicate the behavior of every logic circuit.
 
-An example of such a $2 \to 1$ gate for classical universality is the NAND gate, denoted $\nand$, which outputs a 0 if and only if both of its input bits are 1. The universality of NAND can be proved either by exhaustively showing that every possible $2 \to 1$ gate can be constructed by NAND, or with a more formal proof presented later in the paper.
+An example of such a universal gate is the NAND gate ($\nand$ in logical notation) which outputs a 0 if and only if both of its input bits are 1. The universality of NAND can be proved either by exhaustively showing that every possible $2 \to 1$ gate can be constructed by NAND, or with a more formal proof presented later in the paper.
 
-A gate set is said to be minimal if it is the smallest gate set possible to make. For example, $\{ \nand \}$ is a minimal universal set because any computation is impossible without at least one operation, and so a set with only a single element is the smallest possible set to be universal.
+A minimal universal gate set is the smallest possible set of universal gates. For example, $\{ \nand \}$ is minimal and universal because no smaller set of gates exists other than the empty set, which cannot replicate most circuits.
 
 \subsection{Quantum Gates}
 \subsubsection{Quantum Computing}
-A quantum computer uses the properties of quantum mechanics in order to perform calculations. By creating a superposition of multiple possible inputs, all operations in a circuit are simultaneously done on each input. By canceling out the probabilities of inputs with negative results using quantum phase, an operation can find only the correct inputs with a quadratic improvement over classical computers. For other less generalizable quantum algorithms, notably Shor's algorithm
+A quantum computer uses the properties of quantum mechanics in order to perform calculations. All operations on a quantum circuit can be applied in superposition, and specific output states can be selected with the use of phase.
+
+Generally, for any problem that can be checked in polynomial time but can be solved only in exponential time, quantum computers have a quadratic speedup over classical computers by using Grover's algorithm. For some specific algorithms, notably Shor's algorithm
 \cite{Shor1997}
 , the speedup over classical computers can be up to exponential.
 
 \subsubsection{Quantum State Vectors}
-The state of a classical system may be represented as a sequence of bits, where each bit represents a wire in a circuit. By interpreting this sequence of bits as a binary integer, every classical state can be represented with a single number.
+The state of a classical logical circuit may be represented as a sequence of bits, where each bit represents a specific wire. By interpreting this bit sequence as a binary integer, every classical state can be represented with a single number.
 
-Quantum states, on the other hand, may be in a superposition of multiple states and so may be represented as a list of probability amplitudes corresponding to each classical state. This list is called the state vector and can accurately represent any possible quantum superposition. Thus a classical state with three wires can be in one of eight states, and a quantum state with three qubits (the quantum equivalent of classical bits) can be fully described by a unit vector in $\mathbb{C}^8$. The state vector must always have a length of 1, because the sum of the squared amplitudes has to be 1, just as the sum of a set of probabilities must always add up to 1.
+Quantum systems may be in a superposition of multiple states, and so can be represented by a list of the amplitude of each possible classical state. This list is called the state vector and can accurately represent any possible quantum superposition. Thus a classical state with three wires can be in one of eight states, and a quantum state with three qubits (the quantum equivalent of classical bits) can be fully described by a unit vector in $\mathbb{C}^8$. Because the probability of getting specific states must always add up to 1, and because the probability is the square of the amplitude, the magnitude of the statevector must be 1.
 
-A classical state with state number $n$ may also be represented as the $n$th unit vector, because it has a 100\% chance to be in the state $n$.
+A classical state with state number $n$ may also be represented as the $n$th unit vector, because it has a 100\% chance to be in the state $n$, and a 0\% chance to be in any other state.
 
 \subsubsection{Quantum Operations}
-The state vector representation of a classical or quantum state is extremely helpful in formulating universality mathematically using linear algebra. For an $n$-wire circuit with $N=2^n$ states, a matrix
+The state vector representation of a classical or quantum state is extremely helpful because it can formulate universality in terms of linear algebra. For an $n$-wire circuit with $N=2^n$ states, an operation that takes each classical state $i$ to the state $\vec{c_{i}}$ can be written as the matrix
 $$
 (\vec{c_{1}} \: \dots \: \vec{c_{N}})
 $$
-will take a classical state vector in the state $i$ to the state vector $\vec{c_{i}}$. Thus, any operation can be directly described as a matrix of the output state vectors for each input.
+Because operations on superpositions are computed across each classical state, such a matrix can be found for any quantum gate, and matrix multiplication corresponds to application of a gate.
 
-In almost all cases, these matrices are square, because most quantum operations are in-place, meaning they change the state but do not add or delete wires from a quantum circuit. Some exceptions include state preparation matrices (which are used to mathematically describe extra ancilla wires) and discarding matrices (which remove a 0-state wire from a circuit).
+In almost all cases, these matrices are square, because most quantum operations are in-place, meaning they change the state but do not add or delete wires from a quantum circuit. However, they can also describe the addition or removal of a helping qubit, called an ancilla.
 
-In most cases, an operation is done only on a subset of the wires in a circuit. In order to apply an operation matrix, it first needs to be combined with identity matrices until it achieves the correct dimensions. For a circuit with $n$ wires, in order to operate $O$ on wires $a$ through $b$, the following matrix $M$ must be applied to the state vector of the entire circuit:
+Many quantum operations are unary or binary, and so only apply to a subset of the wires in a larger circuit. This can be done by combining a gate matrix with identity matrices: for a circuit with $n$ wires, in order to operate $O$ on wires $a$ through $b$, the following matrix $M$ must be applied to the state vector of the entire circuit:
 $$
 M_{a, b} = I_{2^a} \otimes O \otimes I_{2^{n - b}}
 $$
@@ -79,11 +76,11 @@ where $\otimes$ is the Kronecker product and $I_x$ is the $x \times x$ identity 
 
 Each matrix $M$ represents one way that $O$ can be applied to a circuit, so the problem of universality can be described in terms of a matrix decomposition of any arbitrary operation into matrices of the form of $M$.
 
-The proofs of universality presented in this paper will rely on decomposing each operation in an already proven quantum gate set into operations from a smaller gate set.
+A simpler route to proving universality is to implement another preexisting universal gate set, and it is what will be used throughout this paper to prove universality.
 
 \section{Classical Universality}
 \subsection{Classical Circuits}
-Classical circuits are generally presented as electrical circuit diagrams. For example, a demonstration of how an XOR gate can be made from NAND gates is given in Figure 1.
+Classical circuits are generally presented as electrical circuit diagrams. For example, \autoref{fig:classical-xor-from-nand} is a circuit demonstrating how a NAND gate can replicate the behavior of an XOR gate.
 
 \begin{figure}[ht]
     \centering
@@ -131,25 +128,23 @@ Classical circuits are generally presented as electrical circuit diagrams. For e
         ;
     \end{circuitikz}
     \caption{XOR Circuit from NAND Gates}
-    \label{fig:classical xor from nand circuit}
+    \label{fig:classical-xor-from-nand}
 \end{figure}
 
-This classical diagram has a number of properties which differ from most quantum circuits:
-\begin{itemize}
-    \item Wires are allowed to cross and move
-    \item Wires may be copied or duplicated
-    \item Gates may change the number of wires
-    \item No ancilla wires (in the 0 state) are provided
-\end{itemize}
-In order to rectify the first disparity, all quantum circuits used to prove universal quantum gate sets will also be allowed to use the SWAP gate, represented with a $\times$ symbol on each wire, which swaps the state of two qubits and so is equivalent to crossing wires in a classical circuit.
+There are some significant differences between a classical circuit diagram and a quantum one, and in order to write a classical circuit in quantum notation, some changes must first be made to it: classical circuit diagrams allow wires to be moved and change directions and be copied and created and destroyed, none of which are allowed in quantum circuits.
 
-The second disparity presents a more significant problem, because the No Cloning Theorem asserts that quantum states cannot be perfectly copied. Instead of directly copying states, another approach is to initialize a circuit with a number of wires in each state. Thus any previously required copying can be achieved through duplication of the applied operations.
+In order to change the vertical ordering of wires, all quantum circuits used to prove universal quantum gate sets will also be allowed to use the SWAP gate, represented with a $\times$ symbol on each wire, which swaps the state of two qubits and so is equivalent to crossing wires in a classical circuit.
 
-The third disparity can be prevented by changing the types of classical gates used. Instead of $2 \to 1$ gates like NAND, one can implement $2 \to 2$ gates which replicate the behavior of the original gate on the lower output wire, and then have some other dummy behavior on the upper output wire. Under this new construction, when given an input of $(p, q)$, the modified NAND gate returns $(0, p \nand q)$. This simple example is not entirely accurate as quantum gates must also be reversible for reasons of physics, but this approach can generally be applied.
+Because the No Cloning Theorem asserts that quantum states cannot be perfectly copied, one may instead initialize a circuit with a many of wires in each input state. Thus any previously required copying can be achieved through duplication of applied operations.
 
-The final disparity can be solved by just disallowing any ancilla wires in quantum circuits, but under most formulations of quantum universality, it is assumed that as many ancilla bits are given as are required. This is not so much a mathematical problem as it is a problem with differing definitions of universality. Because of this, this paper will explore both the case where ancilla bits in the 0 state are allowed.
+Because the number of wires in a quantum circuit is, for the most part, constant, instead of $2 \to 1$ gates like NAND, one can implement $2 \to 2$ gates which are still able to replicate the behavior of the original gate. Under this new construction, when given an input of $(p, q)$, one such modified NAND gate may return $(0, p \nand q)$. This simple example is not entirely accurate as quantum gates must also be reversible, but it shows that classical behavior may still be converted into quantum circuitry.
 
-$\emph{Fig. \ref{fig:quantum xor from nand circuit}}$ shows the new implementation of an XOR gate after making the above changes. It only uses modified $2 \to 2$ NAND gates, and it also shows the current state at various positions along the circuit, logically simplified as much as possible.
+Finally, in most quantum circuits, it is assumed that one may use extra ancilla bits provided in the $\ket{0}$ state. However, this is not the case in classical logic circuitry. If such were the case, a gate like 
+$G(p, q) = \neg p \nand q$
+would be universal \footnote{For example, it can implement the universal $\text{NAND}(p, q)$ with $G(G(0, p), q)$}, even though it is not classified as such. This gives rise to a non-trivial difference between "strict"  universality, where no extra wires are provided, and "weak" universality, where ancilla qubits are necessary. This paper provides a minimal set for the strict case, but it remains possible to find a smaller set if ancilla qubits are allowed.
+
+After making the above changes, the classical circuit in \autoref{fig:classical-xor-from-nand} can be converted into the quantum circuit in
+\autoref{fig:quantum-xor-from-nand}. For the sake of readability, the state of each wire, logically simplified, is also included after each step.
 
 \begin{figure}[ht]
     \centering
@@ -169,16 +164,16 @@ $\emph{Fig. \ref{fig:quantum xor from nand circuit}}$ shows the new implementati
             q \: & \qw & \qw & \: \neg q \: & \qw & \qw & \: p \nor q \: & \qw & \qw &  \: p \nxor q \: & \qw & \qw & \: p \xor q \: \\
         \end{quantikz}}
     \caption{Quantum-Compatible XOR from NAND}
-    \label{fig:quantum xor from nand circuit}
+    \label{fig:quantum-xor-from-nand}
 \end{figure}
 
 
 
 \subsection{Proof of Classical Universality}
-The most basic classical gates are the $1 \to 1$ gates: $I$ (Identity),  $\neg$ (NOT), $1$ (Constant 1), and $0$ (Constant 0). However, as none of these gates can relate one bit to another, none can perform all binary operations (Such as AND), so it is impossible for any to be universal. Because of this, a universal gate set must have at least one gate with at least two inputs.
+The most basic classical gates are the $1 \to 1$ gates: $I$ (Identity),  $\neg$ (NOT), $1$ (Constant 1), and $0$ (Constant 0). However, as none of these gates can perform all binary operations (such as AND), so it is impossible for them to be universal. Because of this, a universal gate set must have at least one gate with at least two inputs.
 With this limitation, the simplest possible gate type that could be universal is $2 \to 1$.
 
-Focusing back to the regular classical case, without the modifications for implementing it in quantum circuitry, this paper will now present a proof that NAND and NOR are the only $2 \to 1$ universal classical quantum gates. The intuition gained from this proof and the two conditions for universality that it sets forth will be useful in the following sections of the paper.
+Focusing back to the classical case, without the modifications for implementing it in quantum circuitry, this paper will now present a proof that NAND and NOR are the only $2 \to 1$ universal classical quantum gates. The intuition gained from this proof and the two conditions for universality that it sets forth will be useful in the following sections of the paper regarding quantum universality.
 
 
 \newtheorem{theorem}{Theorem}
@@ -203,7 +198,7 @@ Focusing back to the regular classical case, without the modifications for imple
 \end{proof}
 
 \begin{corollary}
-    Any $2 \to 1$ universal gate can replicate the behavior of the $1 \to 1$ not gate, as any input $x$ can be copied to $(x, x)$, onto which $G$ can be applied, resulting in $\neg x$.
+    Any $2 \to 1$ universal gate can replicate the behavior of the NOT gate, as any input $x$ can be copied to $(x, x)$, onto which $G$ can be applied, resulting in $\neg x$.
 \end{corollary}
 
 \begin{lemma}
@@ -212,7 +207,7 @@ Focusing back to the regular classical case, without the modifications for imple
 \end{lemma}
 
 \begin{proof}
-	In order for a gate to be universal, it must be able to correlate two inputs together. That is, a gate $G$ which can be written as $G(p, q) = H(p)$ or $G(p, q) = H(q)$, for some other $1 \to 1$ gate $H$, cannot be universal. If $G$ can be represented in such a way, then the condition holds that it is invariant under at least one input. Therefore, any gate $G$ such that for all inputs p and q, either $G(p, q) = G(\neg p, q)$ or $G(p, q) = G(p, \neg q)$ is not universal. That is,
+	In order for a gate to be universal, it must be able to correlate two inputs together. That is, any $ 2 \to 1$ gate $G$ which can be written as $G(p, q) = H(p)$ or $G(p, q) = H(q)$, for some other $1 \to 1$ gate $H$, cannot be universal. If $G$ can be represented in such a way, then the condition holds that it is invariant under at least one input, either because $G(p, q) = G(\neg p, q)$ or $G(p, q) = G(p, \neg q)$ for all p and q. That is,
 
     $$(\forall (p, q), G(p, q) = G(\neg p, q) \lor G(p, q) = G(p, \neg q)) \implies G \text{ is not universal.}$$
 
@@ -225,16 +220,16 @@ Focusing back to the regular classical case, without the modifications for imple
         &\exists (p, q), G(p, \neg q) = G(\neg p, q)
     \end{align}
 
-    Either $p = q$ or $p = \neg q$. For the sake of contradiction, let $p = \neg q$, (and thus $q = \neg p$),
+    For the sake of contradiction, let $p = \neg q$, (and thus $q = \neg p$),
     $$\exists p, G(p, p) = G(\neg p, \neg p)$$
 
-    By Lemma 1, this must be false for all universal gates. Therefore, if G is universal, for all p, it must satisfy
+    By Lemma 1, this must be false for all universal gates. Therefore, $p = q$, and if G is universal, for all p, it must satisfy
     $$G(p, \neg p) = G(\neg p, p)$$
 \end{proof}
 
 \begin{proof}
     Of the 16 possible $2 \to 1$ gates, only NAND and NOR satisfy both the condition that $G(p, p) = \neg p$ and $G(p, \neg p) = G(\neg p, p)$.
-    Both of these can be exhaustively proved to be universal for all $1 \to 1$ and $2 \to 1$ gates. E.g.
+    Both of these can be exhaustively proved to be universal for all $1 \to 1$ and $2 \to 1$ gates. For example:
     \begin{align}
         \neg p &= p \nand p \\
         0(p) &= (p \nand p) \nand p \\
@@ -242,38 +237,58 @@ Focusing back to the regular classical case, without the modifications for imple
         p \lor q &= (p \nand p) \nand (q \nand q) \\
         &\text{etc.}
     \end{align}
-    In order to prove that NAND and NOR are fully universal (rather than universal for only $2 \to 2$ gates), one can show that it is possible to build a multiplexer to split every possible input state using only NOT (implied to be constructible by the Corollary to Lemma 1), AND (proved above), and OR (proved above). For every possible inputs, one can select the desired output by either sending the wire $w$ into a $0(w)$ gate for an output of 0, or by sending the wire into an identity gate for an output of 1. Finally, using the OR gate, one can combine all the multiplexed wires back together into a single output.
+    In order to prove that NAND and NOR are fully universal (rather than universal for only $2 \to 2$ gates), one can show that it is possible to build a multiplexer to split every possible input state using only NOT (implied to be constructible by the Corollary to Lemma 1), AND (shown above), and OR (shown above). For every possible input, one can select the desired output by either sending the wire $w$ into a $0(w)$ gate for an output of 0, or by sending the wire into an identity gate for an output of 1. Finally, using the OR gate, one can combine all the multiplexed wires back together into a single output.
     This algorithm is able to create any gate with an arbitrary number of inputs, and multiple $n \to 1$ gates may be put in parallel in order to create an $n \to m$ gate, just as any $f: \mathbb{R}^n \to \mathbb{R}^m$ function may be decomposed as $f(\overrightarrow{x}) = (f_1(\overrightarrow{x}), f_2(\overrightarrow{x}), \dots, f_m(\overrightarrow{x}))$.
     Using this approach, any arbitrary gate may be created only from NAND, and thus NAND is universal. The same logic may be applied to NOR to prove it's universality. Due to lemmas 1 and 2, these two are the only gates to satisfy both conditions, and so NAND and NOR are the only $2 \to 1$ universal classical gates.
 \end{proof}
 
 \section{Quantum Universality}
-Just as all classical gates needed to be able to change single bits (i.e. implement the NOT gate, as was proven in the Corollary to Lemma 1) as well as correlate bits together (as proved in Lemma 2), for a set of quantum gates to be universal, it must be able to make every possible change to an individual qubit's state as well as have some method to correlate or entangle multiple qubits together.
+Just as in the classical case, all universal gates G must satisfy the two conditions that
+\begin{itemize}
+    \item G can implement NOT, and
+    \item G is not independent of one input,
+\end{itemize}
+all universal quantum gate sets S must satisfy
+\begin{itemize}
+    \item S can implement any single-qubit operation, and
+    \item Some operation in S is not independent of one of it's inputs.
+\end{itemize}
+
+In other words, a universal quantum gate set must be able to perform an arbitrary single-qubit rotation (the use of the word rotation for this context will be justified in the next section) and must be able to entangle two qubits together. (The word entanglement refers to a superposition of multiple interconnected states.)
 
 \subsection{Bloch Sphere}
-Recall that a quantum state is represented by a state vector: a linear combination of the possible classical states of the system. This state vector is complex, due to quantum physics, and has a magnitude of 1, due to the summation of probabilities. Thus, the set of all possible quantum states is isomorphic to a sphere in $\mathbb{R}^4$. However, the complex phase of the  $\ket{00}$ (i.e.$\left[\begin{smallmatrix} 1 \\ 0 \\ 0 \\ 0 \end{smallmatrix}\right]$) state cannot be physically measured or determined, so it is factored out as a coefficient to the state vector which can then be discarded. This means that a quantum state is generally visualized as a vector on the unit sphere of $\mathbb{R}^3$, with single-qubit operations corresponding to rotations about the sphere.
+Recall that a quantum state is represented by a state vector: a linear combination of the possible classical states of the system. This state vector is complex and has a magnitude of 1. Thus, the set of all possible quantum states is isomorphic to a sphere in $\mathbb{R}^4$. However, the complex phase of the  $\ket{00}$ state cannot be physically measured or determined, so it is factored out as a coefficient to the state vector as a whole, and largely ignored. This means that a single quantum state is generally visualized as a vector on the unit sphere of $\mathbb{R}^3$, with single-qubit operations corresponding to rotations about the sphere.
 
 \subsection{Minimal Universal Quantum Gates}
-A simple set of universal quantum gates is the set of all possible rotations in each axis plus a the entanglement gate CNOT \cite{Boykin2000}:
+A trivial set of universal quantum gates is the set of all possible rotations plus the entanglement gate CNOT \cite{Boykin2000}:
 $$\{R_X(a) : a \in \mathbb{R}\} \cup \{R_Y(b) : b \in \mathbb{R}\} \cup \{R_Z(c) : c \in \mathbb{R}\} \cup \{\text{CNOT}\}$$
 This satisfies the above conditions for universality: it can construct any possible rotation for a single qubit and it can correlate two qubits' states together. Although this set can exactly implement any other possible quantum gate, it contains every possible axis rotation gate, which is far more gates than is necessary.
 
 \subsubsection{Irrational Angle Gates}
-A much smaller gate set can be constructed after noting the fact that repeated rotations by an irrational angle can approximate a rotation by any angle to within some arbitrary precision efficiently. This fact can be derived from the Kronecker approximation theorem \cite{Hlawka1986}, and a more general result which applies to all possible gates is given by the Solvay-Kitaev theorem \cite{Dawson2005solovaykitaevalgorithm}.
-Such irrational angled rotations can be implemented with a sequence of rational rotations in different axes. For example, a rotation by $\pi/4$ in the Z axis then a rotation by $\pi / 4$ in the X axis results in a rotation angle of
+A much smaller universal set can be found after noting the fact that repeated applications of an irrational rotation gate can efficiently approximate arbitrary rotation to within some desired precision.
+
+That is, a gate $U$, which rotates by an irrational portion of a full rotation $\theta$ around an axis, after $n$ applications, results in a total rotation of $n \theta \mod 2 \pi$ about that axis. For a given angle $\phi$ and any arbitrary precision $\epsilon$, there is an $n$ such that $|n \theta - \phi \mod 2| < \epsilon$. This fact can be derived from the Kronecker approximation theorem \cite{Hlawka1986}, and a more general result which applies to all possible gates is given by the Solvay-Kitaev theorem \cite{Dawson2005}.
+
+Such irrational angled rotations can be implemented with a sequence of rational rotations in different axes. For example, a rotation by $\pi/4$ in the Z axis followed by a rotation by $\pi / 4$ in the X axis results in a rotation angle of
 $$\arccos\left(\frac{\sqrt{2}}{2} - \frac{1}{4}\right) \approx 1.09606 \text{ about the axis } \langle 1, 1 - \sqrt{2}, 1 \rangle \text{.}$$
-For example, the Clifford + T set, consisting of the gates $\{\text{CNOT}, \text{H}, \text{S}, \text{T}\}$, is universal despite the fact that the rotation angle of each single-qubit gate is rational \cite{Boykin2000}.
+Because of this, the Clifford + T set, consisting of the gates $\{\text{CNOT}, \text{H}, \text{S}, \text{T}\}$, is universal despite the fact that the rotation angle of each single-qubit gate is rational \cite{Boykin2000}.
+
 
 \subsubsection{Reducing the Number of Gates}
-In the proof of classical universality, two basic properties for universality were established: that any universal set must be able to perform a bit flip on any input, and that it must be able to correlate two wires together. Based on these two properties, one can construct a universal set of only two gates, each of which performs one of these actions.
+In the proof of classical universality, two basic properties for universality were established: that any universal set must be able to perform a bit flip on any input, and that it must be able to correlate two wires together. Based on these two properties, one can construct a classically universal set of only two gates, where each performs one action.
 
-The Pauli-Y gate can be used to perform a bit flip, and the CNOT gate can entangle two qubits, but although this satisfies the classical requirements, a quantum universal set must also be able to apply a phase-shift to the input. The simplest universal quantum gate set must then involve a bit flip gate (i.e. the Y gate) and a controlled arbitrary Z gate, as rotations about the Z-axis impart a phase on a state. Specifically with the 90-degree Y rotation gate (denoted either $R_Y(\pi/2)$ or $Y^{1/2}$), any rotation around the Z-axis may be mapped to a rotation on the X-axis. Rotations about the X and Z axes correspond the spherical coordinate system for a constant radius, which implies that these two gate types can indeed replicate any single-qubit rotation. This is the intuition behind the circuits that I will use to prove the universality of these gates.
+The Pauli-Y gate can be used to perform a bit flip, and the CNOT gate can entangle two qubits, and so the set containing those two gates is classically universal.
 
-Before going further, some clarification regarding the Z-axis rotation is required. An arbitrary rotation gate must be able to apply an infinite number of different possible rotations, and thus cannot be considered a single gate itself. Instead, one can use an irrational-angled gate to approximate any rotation to arbitrary precision.
+Although this satisfies the classical requirements, a quantum universal set must also be able to apply a phase-shift to the input. That is, it must be able to impart an arbitrary Z-axis rotation.
 
-For example, an irrational Z rotation gate $R_Z(2\pi\xi)$ where $\xi$ is irrational can approximate any Z rotation gate. For my gate set, the golden ratio $\Phi$ will be used as the irrational number, as $n \Phi \mod 1$ is fairly evenly distributed across the unit interval.
-This logic results in the 2 gate set:
-$$\{CR_Z(2\pi\Phi), R_Y(\pi/2)\}$$
+Recall that an irrational Z rotation gate $R_Z(2\pi\xi)$ where $\xi$ is irrational can approximate any Z rotation gate. For my gate set, the golden ratio $\varphi$ will be used as the irrational number, as $n \varphi \mod 1$ is fairly evenly distributed across the unit interval.
+
+In order to transform arbitrary rotation in one axis into arbitrary rotation in any axis, a 90-degree rotation gate can be used. For example, with the 90-degree Y rotation gate (denoted either $R_Y(\pi/2)$ or $Y^{1/2}$), any rotation around the Z-axis may be mapped to a rotation on the X-axis, thus covering the space of all possible rotations around a sphere. Because applying $Y^{1/2}$ twice results in the equivalent of a Y gate, we can replace the Y gate with the the $Y^{1/2}$ gate.
+
+Although our set of CNOT, $Y^{1/2}$, and $R_Z(2\pi\varphi)$ is universal (because it implements arbitrary rotations as well as entanglement), it can be reduced even further by combining gates. Specifically, the CNOT gate can be eliminated by adding a control (meaning that the gate only activates in the $\ket{1}$ state of another qubit) to one of the other gates. If the control is applied to the $Y^{1/2}$, then it would be impossible to bitflip an input only in the $\ket{0}$ state, so the control must be applied to the Z gate.
+
+This logic results in a universal set with only two gates:
+$$\{CR_Z(2\pi\Phi), Y^{1/2}\}$$
 
 \section{Results}
 In order to prove that the above gate set is universal, it must be shown that this gate set can implement any other gate. Because Clifford + T is universal, then if each gate of Clifford + T can be implemented, then it implies that the set is universal. That is, if a gate set can implement gates which can implement every circuit, then that gate set must be able to directly implement any circuit, and is therefore universal.
@@ -312,7 +327,7 @@ $$
 \end{bmatrix}
 $}
 $$
-which approximates CNOT to $\epsilon = 7.15287 \times 10^{-6}$, within the desired accuracy.\footnote{The Solvay-Kitaev theorem \cite{Dawson2005solovaykitaevalgorithm} is given in terms of the L2 matrix norm, but as the L2 norm bounds the Frobenius norm from below \cite{GeijnMyers}, the computationally simpler Frobenius norm will be used for epsilon values.}
+which approximates CNOT to $\epsilon = 7.15287 \times 10^{-6}$, within the desired accuracy.\footnote{The Solvay-Kitaev theorem \cite{Dawson2005} is given in terms of the L2 matrix norm, but as the L2 norm bounds the Frobenius norm from below \cite{GeijnMyers}, the computationally simpler Frobenius norm is used for epsilon values.}
 
 \subsection{Proof of T}
 Implementing the T gate itself is fairly simple, because T is equivalent to $R_Z(\pi/2)$. However, $R_Z$ and $CR_Z$ are considered different gates, so in order to implement a $R_Z(\pi/2)$, a state in the $\ket{1}$ state must be prepared. Without the use of an ancilla qubit already in the $\ket{0}$ state, it can be done with the following circuit:
