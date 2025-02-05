@@ -27,7 +27,7 @@
 \newpage
 
 \begin{abstract}
-This paper investigates the construction of universal classical and quantum gates, and proposes two novel quantum sets which use the fewest types of gates for each of their constructions of universality. For a circuit with  maximally entangled ancillas---a formulation similar to classical universality---the set containing the controlled irrational Z-rotation gate and the 90-degree Y-rotation gate is universal to an arbitrary precision precision.
+This paper investigates the construction of universal classical and quantum gates, and proposes two novel quantum sets which use the fewest types of gates for each of their constructions of universality. For a circuit with  maximally entangled ancillas---a formulation similar to classical universality---the set containing the controlled irrational Z-rotation gate and the 90-degree Y-rotation gate is universal to an arbitrary precision.
 \end{abstract}
 \newpage
 
@@ -68,13 +68,13 @@ Because operations on superpositions are computed across each classical state, s
 
 In almost all cases, these matrices are square, because most quantum operations are in-place, meaning they change the state but do not add or delete wires from a quantum circuit. However, they can also describe the addition or removal of a helping qubit, called an ancilla.
 
-Many quantum operations are unary or binary, and so only apply to a subset of the wires in a larger circuit. This can be done by combining a gate matrix with identity matrices: for a circuit with $n$ wires, in order to operate $O$ on wires $a$ through $b$, the following matrix $M$ must be applied to the state vector of the entire circuit:
+Many quantum operations are unary or binary, and so only apply to a subset of the wires in a larger circuit. This can be done by combining a gate matrix with identity matrices: for a circuit with $n$ wires, in order to apply $U$ on wires $a$ through $b$, the following matrix $M$ must be applied to the state vector of the entire circuit:
 $$
-M_{a, b} = I_{2^a} \otimes O \otimes I_{2^{n - b}}
+M_{a, b} = I_{2^a} \otimes U \otimes I_{2^{n - b}}
 $$
 where $\otimes$ is the Kronecker product and $I_x$ is the $x \times x$ identity matrix.
 
-Each matrix $M$ represents one way that $O$ can be applied to a circuit, so the problem of universality can be described in terms of a matrix decomposition of any arbitrary operation into matrices of the form of $M$.
+Each matrix $M$ represents one way that $U$ can be applied to a circuit, so the problem of universality can be described in terms of a matrix decomposition of any arbitrary operation into matrices of the form of $M$.
 
 A simpler route to proving universality is to implement another preexisting universal gate set, and it is what will be used throughout this paper to prove universality.
 
@@ -312,7 +312,7 @@ which can be implemented with the following circuit (where exponentiation repres
             \ket{\psi_2} \: & \qw & \gate{R_Y(\pi/2)^{3}} & \gate{R_Z(\pi)} & \gate{R_Y(\pi/2)^{1}} & \qw
         \end{quantikz}}
     \caption{Proof of CNOT Circuit}
-    \label{fig:quantum universal set 1 proof of CNOT circuit algebraic}
+    \label{fig:proof-CNOT-1}
 \end{figure}
 
 Multiplying the circuit matrices results in the CNOT matrix, except with a flipped global phase, which is inconsequential. As the arbitrary Z rotation gate has been replaced by the irrational Z rotation gate, $R_Z(\pi)$ must be approximated. With $\varepsilon \le 10^{-5}$, the approximation comes out to be $R_Z(2\pi\varphi)^{98209}$. This specific exponent was found computationally through a brute force search. The net effect of this circuit is to apply this matrix:
@@ -338,23 +338,11 @@ Implementing the T gate itself is fairly simple, because T is equivalent to $R_Z
             \ket{\psi_{in}} \: & \qw & \ctrl{1} & \qw & \gate{R_Z(\pi/4)} & \qw & \: \ket{\psi_{out}}\\
             \ket{\psi_{in}} \: & \gate{R_Y(\pi/2)^3} & \gate{R_Z(\pi)} & \gate{R_Y(\pi/2)^3} & \ctrl{-1} & \gate{R_Y(\pi/2)^2} & \: \ket{0}
         \end{quantikz}}
-    \caption{Proof of T Circuit, No $\ket{0}$ Ancilla}
-    \label{fig:quantum universal set 1 proof of T circuit without ancilla}
+    \caption{Proof of T Circuit}
+    \label{fig:proof-T-1}
 \end{figure}
 
-If instead an ancilla is allowed, then it can be implemented simply with the following circuit, which prepares the ancilla from a $\ket{0}$ to a $\ket{1}$ state, applies the rotation, then reverts the ancilla:
-\begin{figure}[ht]
-    \centering
-    \scalebox{1.1}{
-        \begin{quantikz}
-            \ket{\psi_{in}} \: & \qw & \gate{R_Z(\pi/4)} & \qw & \: \ket{\psi_{out}}\\
-            \ket{0} \: & \gate{R_Y(\pi/2)^2} & \ctrl{-1} & \gate{R_Y(\pi/2)^2} & \: \ket{0}
-        \end{quantikz}}
-    \caption{Proof of T Circuit, Ancilla Allowed}
-    \label{fig:quantum universal set 1 proof of T circuit}
-\end{figure}
-
-Again, the $R_Z(\pi)$ gate is approximated with $R_Z(2\pi\varphi)^{98209}$, and $R_Z(\pi/4)$ is approximated with $R_Z(2\pi\varphi)^{5796}$. Excluding the ancilla bit, this circuit is to applies the matrix:
+Again, the $R_Z(\pi)$ gate is approximated with $R_Z(2\pi\varphi)^{98209}$, and $R_Z(\pi/4)$ is approximated with $R_Z(2\pi\varphi)^{5796}$. The result of this circuit is to apply the matrix:
 
 $$
 \scalebox{1}{$
@@ -380,7 +368,7 @@ $$
 approximates the S gate to $\varepsilon = 5.84993 \times 10^{-6}$.
 
 \subsection{Proof of H}
-The H gate is the most difficult to implement, as it contains an off-axis rotation (around the line X = Z). This leads to a much larger circuit approximation. Without the use of any $\ket{0}$ state ancilla qubits, the H gate can be implemented with the circuit:
+The H gate is the most difficult to implement, as it contains an off-axis rotation (around the line X = Z). This leads to a more complex circuit approximation:
 \begin{figure}[ht]
     \centering
     \scalebox{0.9}{
@@ -388,13 +376,11 @@ The H gate is the most difficult to implement, as it contains an off-axis rotati
             \ket{\psi_{in}} \: & \qw & \ctrl{1} & \gate{R_Y(\pi/2)^2} & \gate{R_Z(\pi)} & \gate{R_Y(\pi/2)^3} & \: \ket{\psi_{out}}\\
             \ket{\psi_{in}} \: & \gate{R_Y(\pi/2)^3} & \gate{R_Z(\pi)} & \gate{R_Y(\pi/2)^3} & \ctrl{-1} & \gate{R_Y(\pi/2)^2} & \: \ket{0}
         \end{quantikz}}
-    \caption{Proof of H Circuit, No $\ket{0}$ Ancilla}
-    \label{fig:quantum universal set 1 proof of H circuit}
+    \caption{Proof of H Circuit}
+    \label{fig:proof-H-1}
 \end{figure}
 
-Although this can be simplified in the ancilla-allowed construction, it is easy to prove (by means of adding a CNOT gate to the ancilla, controlled on the input) that this method also works allowing for ancilla qubits.
-
-The $R_Z(\pi)$ gate must be approximated with greater precision than other gates to keep the final $\varepsilon$ less than $10^{-5}$. The first exponent which meets this criteria is $R_Z(2\pi\varphi)^{416020}$. Again excluding the ancilla bit, the circuit matrix
+To keep the final $\varepsilon$ less than $10^{-5}$, a more presice estimate for $R_Z(\pi)$ must be found. The first exponent which meets this criteria is $R_Z(2\pi\varphi)^{416020}$. The circuit matrix
 
 $$
 \scalebox{1}{$
